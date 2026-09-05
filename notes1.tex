@@ -1,0 +1,105 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in,8in}]{geometry}
+\usepackage{outlines, enumerate}
+\usepackage{amsmath,amssymb,amsthm}
+
+
+
+
+\begin{document}
+	\section{Brute Force Classification}
+	\subsection{Supervised Machine Learning}
+	\begin{outline}
+		\1 Input space $X$, Output space $Y$
+		\1 Training data: given many instances $\mathcal{D} = \{(\vec{x}_i, y_i)\}^N_{i=1}$
+		\1 Learn a function $X \rightarrow Y$ which is expressed by parameters
+		\1 Test data: Given new $\vec{x}_{N+1}$, use function to predict $y_{N+1}$
+		\1 Evaluation: Check whether prediction $y_{N+1}$ matches the ground truth $y^*_{N+1}$
+		\1 $y^*_{N+1}$ is not known to the black box (held-out)
+	\end{outline}
+	\subsection{Text Categorization}
+	\begin{outline}
+		\1 Given a text document, assign it to one of $K$ categories.
+		\1 Consider how you're deciding the category and how you would explain it to the computer.
+		\1 Input space: documents, Output: one of $K$ categories
+		\1 Training data: documents and their category (e.g. sports, news)
+		\1 Learn a categorization function
+		\1 Test data: Given a new document, use function to predict category
+		\1 Evaluation: Check whether predicted category is correct
+		\1 Evaluation measure: how many correct predictions?
+	\end{outline}
+	\subsubsection{Binary Text Categorization Task}
+	\begin{outline}
+		\1 There is only one category.
+		\1 Predict whether the document is in the category or not (pos/neg)
+		\1 Same: Predict the set of documents that are in this category.
+		\1 Input space: documents, Output: $\{0, 1\}$ (1=positive)
+		\1 Training data: documents and whether they are in this category (e.g. sports or not)
+		\1 Learn a categorization function
+		\1 Evaluation measure: how many correct predictions?
+	\end{outline}
+	\subsubsection{One-vs-Rest Classification}
+	\begin{outline}
+		\1 Input space: documents, Output: one of $K$ categories
+		\1 Redefine the task to learn $K$ binary categorization functions
+		\1 Learn $K$ categorization functions (one per category)
+		\1 Can a document be positive for multiple categories? If yes, which category to choose?
+		\2 Each categorization function bases the decision on a \textbf{Classification Score} or \textbf{Confidence}
+		\2 Assign the document to the category with the highest confidence
+	\end{outline}
+	\subsubsection{Supervised Document Classification}
+	\begin{outline}
+		\1 Represent documents with feature vectors
+		\1 Example content features:
+			\2 $f_1{d}:$ 1 if doc $d$ contains the word "ball"; 0 otherwise
+			\2 $f_2(d):$ 1 if doc $d$ contains the world "goal"; 0 otherwise
+			\2 $f_3(d):$ 1 if doc $d$ contains the word "election"; 0 otherwise
+		\1 Change the parameters in the function to get more predictions right
+		\1 Iteratively update parameters (Training loop)
+		\1 Then fix the parameters, make one prediction in the test set
+		\1 Sometimes: very good on the train set, but errors on the test set
+		\1 {\bf Note: Never train on the test data!}
+			\2 Never test on the training data (unless you call it training error)
+			\2 Never leak the test data into your training process
+	\end{outline}
+	\subsection{A Simple Categorization Model}
+	\subsubsection{Linear Hyperplane Model}
+	\begin{outline}
+		\1 Feature vectors in space $X$ (number of features = dimension of space)
+		\1 Find a hyperplane that separates positive from negative examples
+		\1 To classify a new example, see if it is on the "positive" side of the hyperplane
+			\2 Weight vector $\vec{w}$ points towards positive side
+		\1 {\it The hyperplane has one fewer dimension than the vector space}
+	\end{outline}
+	\subsubsection{Hyperplane Parameters}
+	\begin{outline}
+		\1 Hyperplane is represented by vector $\vec{w}$
+		\1 $\vec{w}$ is orthogonal to the hyperplane
+		\1 $\vec{w}$ has the same dimensionality as $\vec{x}_i$
+		\1 If $\vec{w} \cdot \vec{x}_i > 0$ then example $i$ is positive
+		\1 Inner product $\vec{w} \cdot \vec{x}_i = \sum_jw_jx_{ij}$ over feature dimensions $j$.
+	\end{outline}
+	\subsubsection{Inner Products and Cosines}
+	\begin{outline}
+		\1 If $\vec{w} \cdot \vec{x} > 0$ then example $i$ is positive
+		\1 Same as: $\angle(\vec{w}, \vec{x}_i) < 90\deg$
+		\1 Same as: $\cos(\vec{w}, \vec{x}_i) > 0$ \hspace{3em}$\cos(\vec{a}, \vec{b}) = \frac{\vec{a} \cdot \vec{b}}{||\vec{a}||\:||\vec{b}||}$
+	\end{outline}
+	\subsubsection{Hard vs Soft Classification}
+	\begin{outline}
+		\1 Sometimes we want to tolerate classification errors in training data to get a more robust hyperplane
+		\1 We don't want outliers and errors to dictate our model.
+		\1 \textbf{Hard classification} is strict; the hyperplane exactly and entirely divides the space into positive and negative
+		\1 \textbf{Soft classification} allows for some errors, typically to allow for a simpler hyperplane. This also prevents outliers and errors from causing issues with classification
+	\end{outline}
+	\subsection{The Intercept of the Model}
+	\subsubsection{Changing the Threshold with "The Intercept"}
+	\begin{outline}
+		\1 Changing the threshold $b$: $\vec{w} \cdot \vec{x}_1 > b$ \hspace{2em} The intercept $b$
+	\end{outline}
+	\subsubsection{"The Intercept" Trick}
+	\begin{outline}
+		\1 It is easy to forget to add the intercept for $\vec{w} \cdot \vec{x}_i > b$.
+		\1 Rewrite as $\vec{w} \cdot \vec{x}_i + (-b)\cdot 1 > 0$, recognize the inner products
+	\end{outline}
+\end{document}
