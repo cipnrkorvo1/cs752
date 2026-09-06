@@ -1,12 +1,21 @@
 \documentclass{article}
 \usepackage[a4paper, total={6in,8in}]{geometry}
-\usepackage{outlines, enumerate}
+\usepackage{graphicx,float,hyperref}
+\usepackage{outlines,enumerate}
 \usepackage{amsmath,amssymb,amsthm}
 
+\renewcommand{\vec}[1]{%
+	\mathbf{#1}%
+}
 
-
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
 
 \begin{document}
+	\href{https://mycourses.unh.edu/courses/152824/files/folder/lecture?preview=15838160}{\textsf{Reference lecture (click)}}
 	\section{Brute Force Classification}
 	\subsection{Supervised Machine Learning}
 	\begin{outline}
@@ -96,10 +105,145 @@
 	\subsubsection{Changing the Threshold with "The Intercept"}
 	\begin{outline}
 		\1 Changing the threshold $b$: $\vec{w} \cdot \vec{x}_1 > b$ \hspace{2em} The intercept $b$
+		\1 By adjusting $b$, you shift the threshold of classification.
+		\1 \textbf{Intercept trick:} It is easy to forget to add the intercept for $\vec{w} \cdot \vec{x}_i > b$.
+		\2 Rewrite as $\vec{w} \cdot \vec{x}_i + (-b)\cdot 1 > 0$, recognize the inner products
+		\2 Consider the feature vector $\vec{x}_i$ with $D$ dimensions. Append one additional feature dimension as follows:
+		\begin{equation*}
+			\vec{x}_i =
+			\begin{pmatrix} x_{i1} \\ x_{i2} \\ ... \\ x_{iD} \\ 1 
+			\end{pmatrix} 
+			\hspace{70pt}
+			\vec{w} = 
+			\begin{pmatrix} w_1 \\ w_2 \\ ... \\ w_D \\ -b
+			\end{pmatrix}
+		\end{equation*}
+		\2 Train a classification model on augmented $\vec{x}$ without intercept:
+		\3 Classify: If $\vec{w} \cdot \vec{x}_i > 0$ then $i$ is positive
+		\2 Automatically learns the intercept as $w_{D+1} = -b$
+		\1 \textbf{Note:} For the rest of the course, we will use the intercept trick. Whenever you load features $x_i$, \underline{don't forget to add another 1 as a constant feature.}
 	\end{outline}
-	\subsubsection{"The Intercept" Trick}
+	\subsection{Training -- Coordinate Ascent}
+	If $\vec{w} \cdot \vec{x}_i > 0$ then example $i$ is positive.
 	\begin{outline}
-		\1 It is easy to forget to add the intercept for $\vec{w} \cdot \vec{x}_i > b$.
-		\1 Rewrite as $\vec{w} \cdot \vec{x}_i + (-b)\cdot 1 > 0$, recognize the inner products
+		\1 Start with an initial $\vec{w}$, which can be vector of zeros or random.
+		\1 Repeat: Randomly select a dimension $j$ (coordinate)
+		\2 Vary the entry $w_j$ up or down, observe classification quality
+		\2 Lock in the best setting for $w_j$
+		\2 Move onto next dimension...
+		\1 Keep on repeating until the change in quality is small
+		\hspace{1em}
+		\1 To "Vary $w_j$": use a grid of values $\Delta_k$ to try out, e.g.
+		\begin{equation*}
+			\begin{pmatrix}w_1\\...\\w_j\\...\\w_{D+1}\end{pmatrix}
+			\rightarrow
+			\begin{pmatrix}w_1\\...\\w_j + \Delta_1\\...\\w_{D+1}\end{pmatrix}
+			\rightarrow
+			\begin{pmatrix}w_1\\...\\w_j+\Delta_2\\...\\w_{D+1}\end{pmatrix}
+			\rightarrow
+			...
+		\end{equation*}
+		\1 Use each $\vec{w}$ to classify all training examples, choose $\vec{w}$ with the best prediction quality (before advancing to next $j$).
+		\1 \textbf{When to stop?:} Since changing $w_1$ will affect the best choice for $w_2$, etc. we have to consider the same coordinate $j$ multiple times.
+		\1 There might always be a tiny improvement, loop forever...
+		\1 Run until the relative improvement in quality is small. How to measure quality? $\rightarrow$
+	\end{outline}
+	\subsection{How to measure Prediction Quality?}
+	\begin{outline}
+		\1 "choose $\vec{w}$ with the best \underline{prediction quality}"
+		\1 \textbf{Accuracy:} how many examples $i$ are correctly predicted (higher is better)
+		\1 \textbf{Misclassification rate:} fraction of mistakes (lower is better)
+		\1 We can easily use other measures of prediction quality
+		\2 \textbf{Precision:} among all $i$ that are predicted as positive, how many are correct?
+		\2 \textbf{Recall:} of all actually positive $i$, how many are predicted as positive?
+		\2 \textbf{F1-Measure:} harmonic mean of precision and recall
+		\begin{equation*}
+			\text{F}_1\text{ score } = 2 \cdot \frac{\text{Precision}\cdot \text{Recall}}{\text{Precision} + \text{Recall}} 
+		\end{equation*}
+		\2 Others:
+		\3 ROC-AUC ("Area under the Receiver-Operator Curve")
+		\3 For ranking problems: MAP, NDCG, Precision-at-R, Utility
+	\end{outline}
+	\subsubsection{Confusion Matrix}
+	\begin{outline}
+		\1 For binary classification, Precision, Recall, F1, Accuracy are based on the \textbf{confusion matrix}.
+		\2 $S = \{\text{$i$ that are predicted as positive}\}$
+		\2 $S^* = \{\text{$i$ that are actually positive}\}$
+		\2 $U$: Set of all instances $i$.
+	\end{outline}
+	{\centering \textbf{The Confusion Matrix}\par}
+	\begin{table}[H]
+		\centering
+		% Multiply row height by 2
+		\renewcommand{\arraystretch}{2}
+		\resizebox{\columnwidth}{!}{%
+			\begin{tabular}{lll}
+				\phantom{~} & predicted positive $S$ & predicted negative $U\setminus S$  \\ \cline{2-3} 
+				\multicolumn{1}{l|}{Actual positive $S^*$} & \multicolumn{1}{l|}{true positives (TP) $S \cap S^*$} & \multicolumn{1}{l|}{false negatives (FN) $S^*\setminus S$} \\ \cline{2-3} 
+				\multicolumn{1}{l|}{Actual negative $U\setminus S^*$} & \multicolumn{1}{l|}{false positives (FP) $S\setminus S^*$} & \multicolumn{1}{l|}{true negatives (TN) $U\setminus (S \cup S^*)$} \\ \cline{2-3} 
+			\end{tabular}%
+		}
+	\end{table}
+	\subsection{Coordinate Ascent with Features and Z-Score Normalization}
+	\subsubsection{Coordinate Ascent Recap/Recontextualize}
+	Start with a random $\vec{w}^{(0)}$ (\textbf{initialization}).\\
+	Iterate many times (for $t$ in $1...$): (\textbf{outer loop})
+	\begin{outline}
+		\1 Randomly select a dimension $j$ (\textbf{coordinate})
+		\2 For every $\Delta_k$ on the grid: (\textbf{inner loop})
+		\3 Temporary vector $\tilde{\vec{w}}_{jk} = \vec{w}^{(t-1)} + \Delta_k\vec{1}_j$
+		\3 Note: $\vec{1}_j = (0,...,0,1,0,...)$ is the \textbf{unit vector} for coordinate $j$
+		\3 \textbf{Prediction quality} $\tilde{O}_k =$ classification quality when using $\tilde{\vec{w}}_{jk}$.
+		\2 Identify \textbf{best step size} $k_{\text{best}} =$ arg $\text{max}_k \tilde{O}_k$
+		\2 \textbf{Update the weight vector} $\vec{w}^{(t)} = \tilde{\vec{w}}_{jk_{\text{best}}}$
+		\2 \textbf{Quality of iteration} $t$ is $O^{(t)} = \tilde(O)_{k_{\text{best}}}$
+	\end{outline}
+	Keep on iterating until the relative change in quality $O$ is small.
+	\begin{outline}
+		\1 E.g.: Define convergence as improvement over previous 100 iterations
+		\begin{equation*}
+			1 - \frac{O^{t - 100}}{O^{(t)}} < 0.01
+		\end{equation*}	
+		\1 Stop iteration when converged (maybe plot convergence over $t$)
+	\end{outline}
+	Will the quality $O$ always improve over time?\\
+	Yes! Well: it will never decrease (if you include step size $\Delta_{\text{stay}} = 0$).
+	\subsubsection{Features}
+	\begin{outline}
+		\1 Features common in text categorization are contained words
+		\1 Example content features:
+		\2[] $x_{i1} = f_1(d)$: 1 if doc $d$ contains the word "ball"; 0 otherwise
+		\2[] $x_{i2} = f_2(d)$: 1 if doc $d$ contains the word "goal"; 0 otherwise
+		\2[] $x_{i3} = f_3(d)$: 1 if doc $d$ contains the word "election"; 0 otherwise
+		\2[] $\dots$
+		\2[] $x_{i(V+1)} = f_{V+1}(d) = 1$ (intercept !! )
+	\end{outline}
+	\subsubsection{Z-Score Normalization}
+	Z-Score normalization re-centers the feature vectors so that they have the same mean and variance. The grid needs to be chosen to explore the range of the distribution.
+	\begin{outline}
+		\1 We transform all feature vectors, so that
+		\2 mean $\mu_j$ across examples $\vec{x}_i$ will be zero
+		\2 the standard deviation $\sigma_j$ across examples $\vec{x}_i$ will be one
+		\1 This is called an \textbf{isotropic Gaussian distribution} $\mathcal{N}(0,1)$
+		\1 For each feature $j$:
+		\2 compute its mean $\mu_j$ across examples $\vec{x}_i$ (using only $j$'th entries)
+		\2 compute its standard deviation $\sigma_j$ across examples $\vec{x}_i$
+		\1 Transform all features of all feature vectors $\vec{x}_i$ via
+		\begin{equation*}
+			x_{ij} := \frac{x_{ij} - \mu_j}{\sigma_j}
+		\end{equation*}
+	\end{outline}
+	\subsubsection{Term-Frequency Inverse-Document-Frequency (TF IDF)}
+	\begin{outline}
+		\1 Represent all documents $d_i$ in a corpus
+		\1 Vector space $\mathfrak{F} = \mathcal{R}^V$: one dimension per word type ("ball")
+		\1[]
+		\1 Term Frequency: $\text{tf}_{j,i}$ is how often word $j$ appears in doc $d_i$.
+		\1 The $j$'th entry of document feature $\vec{x}_i = x_{ij}$ is
+		\begin{align*}
+			& x_{ij} = \underbrace{\log(1 + \text{tf}_{j,i})}_{\text{TF}} \cdot \underbrace{\log(\frac{\text{tf}_{*,*}}{1 + \text{tf}_{j,*}})}_{\text{IDF}} && \\
+			& \text{tf}_{j,*} = \Sigma_{\text{docs } i'} \text{ tf}_{j,i'} && \\
+			& \text{tf}_{*,*} = \Sigma_{\text{words } j'} \Sigma_{\text{docs } i'} \text{ tf}_{j',i'} &&
+		\end{align*}
 	\end{outline}
 \end{document}
