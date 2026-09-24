@@ -1,0 +1,164 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in,8in}]{geometry}
+\usepackage{graphicx,float,hyperref}
+\usepackage{outlines,enumerate}
+\usepackage{amsmath,amssymb,amsthm}
+
+\renewcommand{\vec}[1]{%
+	\mathbf{#1}%
+}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+
+\begin{document}
+	\href{https://mycourses.unh.edu/courses/152824/files/folder/lecture?preview=15873135}{\textsf{Reference lecture (click)}}\\
+	\begin{center}
+		{\huge\bf Probabilistic Coin Models}
+	\end{center}
+	\section{Probability Theory Refresher}
+	\subsection{Random variables}
+	\begin{outline}
+		\1 \textbf{Random variables} are functions
+		\2 Val($X$) $=$ set of possible values
+		\2 Random variable $X : \Omega \rightarrow$ Val($X$)
+		\3 Maps each outcome $\omega \in \Omega$ to a value $X(\omega)$ in Val($X$)
+		\2 $X = x$ means $\{\omega | X(\omega) = x\}$
+		\2 $X \leq x$ means $\{\omega | X(\omega) \leq x\}$
+		\2 Sample space implicitly product of the possible-value sets of the considered variables
+	\end{outline}
+	\subsubsection{Discrete random variables}
+	\begin{outline}
+		\1 Described via \textbf{probability mass function} $f_X : \text{Val}(X) \rightarrow [0,1]$
+		\2 $f_X(x) = P(X = x)$
+		\1 Example: \textbf{Bernoulli distribution} Ber($\theta$)
+		\2 Models coin flip with probability $\theta$ of heads
+		\2 Val($X$) $= \{ 0, 1 \} \rightarrow \textbf{binary }\text{RV}$
+		\2 $P(X = 1) = f_X(1) = \theta, \qquad P(X = 0) = f_X(0) = 1 - \theta$
+	\end{outline}
+	\subsection{Mean and Expectation}
+	The \textbf{mean} or \textbf{expected value} $\mu$ of a RV is given by
+	\begin{align*}
+		& E[X] = \sum_{x \in \text{Val}(x)}xf_X(x) && \text{if $X$ is discrete}&\\
+		& E[X] = \int_{x} xf_X(x) dx && \text{if $X$ is continuous} &\\
+		& \mu = E[X] && \text{aka mean} &
+	\end{align*}
+	For coins: $E[X] = 1 \cdot \theta + 0 \cdot (1 - \theta) = \theta$\\
+	The \textbf{variance} $\sigma^2$ is given by
+	\[ \text{var}[X] = E[(X - \mu)^2] \hspace{8cm} \]
+	\subsection{Shortcut notation: $X$ vs $x$}
+	Multiple random variables $X, Y$ and their values $x, y$.\\
+	\begin{outline}
+		\1 We write $X \sim P(X = x)$ to say that $X$ has the specified distr. $P$.
+		\1 $P(X = x)$ refers to pmf (when $X$ discrete) or pdf (continuous)
+		\1 The following shortcut notation saves us from tedious formulas:\\
+		\begin{tabular}{ll}
+			Expression & Shortcut notation \\
+			$P(X = x)$ & $P(x)$ \\
+			$P(X = x \;|\; Y = y)$ & $P(x \;|\; y)$ \\
+			$\forall x P(X = x) = g(x)$ & $P(x) = g(x)$ \\
+			$\forall x \forall y P(X = x \;|\; Y = y) = g(x, y)$ & $P(X \;|\; Y) = g(X \;|\; Y)$
+		\end{tabular}
+		\2 for any deterministic function $g$.
+		\2 For values $x$, $P(x)$ and $P(x \;|\; y)$ are constants
+		\2 Val $X$ are all possible values $X$ can take on (think: type)
+		\2 For r.v.'s $X$, $P(X)$ is a function from Val($X$) $\rightarrow [0,1]$
+		\2 $P(X \;|\; Y)$ is a function from Val($X$) $\times$ Val($Y$) $\rightarrow [0,1]$
+		\2 $P(X \;|\; y)$ is a function from Val($X$) $\rightarrow [0,1]$
+	\end{outline}
+
+	% todo cheatsheet
+
+	\section{Probabilistic Coin Models}
+	\subsection{Probabilistic Processes}
+	Given a probabilistic model with parameters $\theta$.\\
+	Forward:
+	\begin{outline}
+		\1 \textbf{Generation:} You know model and parameters, and you are generating data $x_1, x_2,...,x_n$ with it
+		\1 \textbf{Sampling:} Generating data by performing probabilistic actions on the model
+	\end{outline}
+	Backward:
+	\begin{outline}
+		\1 \textbf{Likelihood:} For given data $x_1,x_2,...,x_n$ and $\theta$, determine how likely a combination is (versus alternatives).
+		\1 \textbf{Inference:} You observe data $x_1,x_2,...,x_n$ and are trying to guess some unobserved variables (future $x_n+1$ or parameter $\theta$)
+		\1 \textbf{Parameter estimation:} You observe data $x_1,x_2,...,x_n$ and you are estimating the parameters of the model ($\theta$)
+	\end{outline}
+	\subsection{Example: Sequence of Flips with one Coin}
+	\subsubsection*{\quad The Bernoulli distribution (Sampling)}
+	Bernoulli distr models a single coin flip (same as Binomial with $n=1$).\\
+	Each coin is represented by its parameter $\theta = P(X = H)$
+	\begin{outline}
+		\1 We can generate a sequence of flips with the same coin:
+		\2 For $i$ in $1$ to $n$:
+		\3 Get a random number $r$ between $0$ and $1 \qquad r \in (0.0,1.0]$
+		\3 If the number is $r < \theta:$\\
+			THEN output $x_i = H$\\
+			ELSE output $x_i = T$
+	\end{outline}
+	Example output $\theta = 0.8$: H H H T H H H H H H
+	\subsubsection*{The Bernoulli distribution (likelihood)}
+	Probability that you see H H T T T from a coin with parameter $\theta$?
+	\begin{outline}
+		\1 Let $X_i$ be the outcome of the $i$'th flip (e.g. $X_2 = H$)
+		\1 $X_i$ is distributed according to the \textbf{Bernoulli distribution} Ber($\theta$)
+		\1 Probability mass function:
+	\end{outline}
+	\begin{align*}
+		P(X_i \;|\; \theta) = \text{Ber}(X_i \;|\; \theta) &= \begin{cases}
+			\theta & X_i = H\\
+			1 - \theta & X_i = T
+		\end{cases}\\
+		&= \mathbb{I}(x_i = H) \cdot \theta + \mathbb{I}(x_i = T) \cdot (1 - \theta)
+	\end{align*}
+	Indicator function $\mathbb{I}(x = y)$ returns 1 if $x==y$ and 0 otherwise\\
+	\\
+	All coin flips are statistically independent (if it's the same coin)
+	\begin{align*}
+		P(X_1,X_2,...,X_n \;|\; \theta) &= P(X_1 \;|\; \theta) \cdot P(X_2 \;|\; \theta) ... P(X_n \;|\; \theta)\\
+		&= \prod_{i} P(X_i \;|\; \theta)\\
+		&= \prod_{i} \text{Ber}(X_i \;|\; \theta)\\
+		&= \prod_{i} \mathbb{I}(x_i = H) \cdot \theta + \mathbb{I}(x_i = T) \cdot (1 - \theta)\\
+		P(HHTTT \;|\; \theta) &= ...
+	\end{align*}
+	\subsubsection*{The Bernoulli distribution (inference)}
+	Given the sequence H H T T T, what is the coin parameter $\theta$?
+	\begin{outline}
+		\1 Point estimate by sample mean:
+	\end{outline}
+	\[ \theta = \frac{\text{number of heads}}{\text{number of flips}} = \frac{n_H}{n} \qquad \text{also denoted } \hat{\theta} \]
+	\subsection{Example: Single Coin with Sufficient Statistics}
+	\subsubsection*{The binomial distribution (likelihood)}
+	\begin{outline}
+		\1 Pick a coin with probability of heads being $\theta$, toss it $n$ times
+		\1 How many heads $n_H$ will you likely see?
+		\2 Let $X \in \{\; 0, ..., n \;\}$ model the number of heads (e.g. $X = n_H$)
+		\2 $X$ is distributed according to the \textbf{binomial distribution} Bin($n,\theta$)
+		\2 Probability mass function (no need to memorize):
+	\end{outline}
+	\[ \text{Bin}(n_H \;|\; n, \theta) = \binom{n}{n_H}\theta^{n_H}(1 - \theta)^{n-n_H} \]
+	\begin{outline}
+		\1 Binomial coefficient $\binom{n}{k}$ "n-choose-k"
+		\2 Expected value of heads $E[X] = \Sigma_x x \cdot \text{Bin}(\; n_H = x \;|\; n,\theta)$
+		\2 Factoid: $E[X] = \theta \cdot n$
+	\end{outline}
+	\subsubsection*{The binomial distribution (inference)}
+	\begin{outline}
+		\1 Among $n = 10$ tosses, you see $n_H = 4$ heads.
+		\1 Can you estimate the coin parameter $\theta$?\\ $p(\theta \;|\; n,n_H)$
+		\1 Expected value of heads\\
+		$E[n_H] = \theta \cdot n 
+		\implies \theta = \frac{n_H}{n}$
+	\end{outline}
+	Among $n = 10$ tosses you see $n_H = 4$ heads. What is $\theta$?
+	\begin{outline}
+		\1 Maximum likelihood estimate: $\hat{\theta} = \arg \max_\theta \mathcal{L}(\theta)$\\
+		Here $\mathcal{L}(\theta) = \text{Bin}(n_H = 4 \;|\; n = 10, \theta)$
+	\end{outline}
+	\subsection{Example: Coin Factory}
+	\subsubsection*{Coin Factory (sampling)}
+	
+\end{document}

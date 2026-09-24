@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in,8in}]{geometry}
+\usepackage{graphicx,float,hyperref}
+\usepackage{outlines,enumerate}
+\usepackage{amsmath,amssymb,amsthm}
+
+\renewcommand{\vec}[1]{%
+	\mathbf{#1}%
+}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+\title{NN Exercise 1: Logistic Regression}
+\date{September 25, 2026}
+\author{Grey Cole}
+
+\newcommand{\gv}{%
+	\:|\:
+}
+
+\begin{document}
+	\maketitle
+	
+	\section{Equivalence}
+	Using $\exp(\mu) \cdot \exp(-\mu) = 1$,
+	\begin{align*}
+		\frac{\exp(\mu)}{1+\exp(\mu)} &= \frac{\exp(\mu)}{1+\exp(\mu)} \cdot \frac{\exp(-\mu)}{\exp(-\mu)}\\
+		&= \frac{\exp(\mu) \cdot \exp(-\mu)}{\exp(-\mu) + \exp(\mu) \cdot \exp(-\mu)}\\
+		&= \frac{1}{\exp(-\mu) + 1}
+	\end{align*}
+	
+	In other words, dividing each part of the fraction $\frac{\exp(\mu)}{1 + \exp(\mu)}$ by $\exp(\mu)$ yields $\frac{1}{\exp(-\mu) + 1}$.
+	
+	\section{Inverse of Bernoulli Log Odds}
+	First, we observe that, since $\theta$ is the parameter of a Bernoulli distribution, $P(0\gv \theta) = 1 - P(1\gv\theta)$. Thus we can rewrite $f(\theta) = \log(\frac{P(1\gv\theta)}{1-P(1\gv\theta)})$.\\
+	By the definition of a Bernoulli distribution with parameter $\theta$, $P(1\gv\theta) = \theta$, and with $\mu = f(\theta)$ we have 
+	\begin{equation*}
+		\mu = \log(\frac{P(1\gv\theta)}{1 - P(1\gv\theta)}) = \log(\frac{\theta}{1-\theta})
+	\end{equation*}
+	We take the exp on both sides
+	\begin{equation*}
+		\exp(\mu) = \frac{\theta}{1-\theta}
+	\end{equation*}
+	and by rearrangement we will arrive at
+	\begin{align*}
+		\theta &= (1-\theta)\exp(\mu)\\
+		&= \exp(\mu) - \exp(\mu)\theta
+	\end{align*}
+	\begin{gather*}
+		\theta + \exp(\mu)\theta = \exp(\mu)\\
+		\theta\cdot(1 + \exp(\mu)) = \exp(\mu)\\
+		\boxed{\theta = \frac{\exp(\mu)}{1 + \exp(\mu)}}
+	\end{gather*}
+	From Q1, we know $\frac{\exp(\mu)}{1+\exp(\mu)} = \frac{1}{\exp(-\mu) + 1}$. Thus, we have shown
+	\begin{align*}
+		\boxed{\theta = f^{-1}(\mu) = \frac{1}{1 + \exp(-\mu)}}
+	\end{align*}
+	
+	\section{Total Probability}
+	Since $\theta$ is a Bernoulli parameter, $P(1\gv\theta) + P(0\gv\theta) = 1$.
+	\\Rewriting $P(0\gv\theta) = 1 - P(1\gv\theta)$, we have
+	\begin{equation*}
+		P(0\gv\theta) = 1 - \frac{1}{1+\exp(-\mu)}
+	\end{equation*}
+	Writing terms over a common denominator,
+	\begin{equation*}
+		\boxed{
+			P(0\gv\theta) = \frac{1+\exp(-\mu)}{1+\exp(-\mu)} - \frac{1}{1+\exp(-\mu)}
+			= \frac{\exp(-\mu)}{1+\exp(-\mu)}
+		}
+	\end{equation*}
+	
+	\section{Decision Boundary}
+	If we define $-\mu = \vec{w}\vec{x}_i$, then we can use previously proven equivalencies:
+	\begin{align*}
+		&P(Y_i = 1 \gv \vec{w},\vec{x}_i) = \frac{1}{1+\exp(-\mu)} = P(1\gv\theta)\\
+		&P(Y_i = 0\gv \vec{w},\vec{x}_i) = \frac{\exp(-\mu)}{1+\exp(-\mu)} = P(0\gv\theta)
+	\end{align*}
+	Thus we will classify an example as positive $(Y_i = 1)$ if and only if
+	\begin{equation*}
+		1 < \frac{P(1\gv\theta)}{P(0\gv\theta)}
+	\end{equation*}
+	which we further rewrite as
+	\begin{equation*}
+		1 < \frac{\frac{1}{1+\exp(-\mu)}}{\frac{\exp(-\mu)}{1+\exp(-\mu)}} \qquad \overset{\text{simplify}}\longrightarrow \qquad 1 < \frac{1}{\exp(-\mu)}
+	\end{equation*}
+	Since $\frac{1}{\exp(-\mu)}$ is equivalent to $\exp(\mu)$, remembering our definition $-\mu = \vec{w}\vec{x}_i$, we have shown this is equivalent to classifying and example as positive $(Y_i = 1)$ if and only if
+	\begin{equation*}
+		% sign flipped, figure out where
+		1 > \exp(\vec{w}\vec{x}_i)
+	\end{equation*}
+	
+	\section{Log Likelihood}
+	
+	\section{Identities}
+	
+	\section{Simplified Log-Likelihood}
+	
+	\section{Gradient on Log-Likelihood}
+	
+	\section{LogReg Gradient as Matrix Operation}
+	
+	\section{L2 regularization}
+	
+	\section{$\star$ L2 regularization as Gaussian Prior}
+	
+	\section{$\star$ Separable data}
+	
+	\section{$\star$ Convexity}
+\end{document}

@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in,8in}]{geometry}
+\usepackage{graphicx,float,hyperref}
+\usepackage{outlines,enumerate}
+\usepackage{amsmath,amssymb,amsthm}
+
+\renewcommand{\vec}[1]{%
+	\mathbf{#1}%
+}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+\begin{document}
+	\href{https://mycourses.unh.edu/courses/152824/files/folder/lecture?preview=15941715}{\textsf{Reference lecture (click)}}\\
+	\begin{center}
+		{\huge\bf Gradient Descent}
+	\end{center}
+	\section{Optimization}
+	\begin{outline}
+		\1 \textbf{Objective} is the function we are optimizing: $\mathcal{O}(\vec{w})$
+		\1 Optimizing can mean either minimizing or maximizing. Optimization literature focuses on minimizing. With focus on ML we may want to:
+		\2 maximize accuracy $\mathcal{O}(...) = \frac{\text{correct predictions}}{\text{all}}$
+		\2 maximize likelihood $\mathcal{O}(...) = \mathcal{L}(...)$
+		\1 Phrase your "wish" in the form of the objective $\mathcal{O}$
+		\1 It is the job of the optimization algorithm to make your wish come true!
+	\end{outline}
+	\subsection{Optimizing: Maximizing vs Minimizing}
+	Tricks
+	\begin{outline}
+		\1 $\log \mathcal{L}(\vec{w})$ and $\mathcal{L}(w)$ have max at the same position
+		\1 maximize $\mathcal{L}$ or minimize $-\mathcal{L}(\vec{w})$ (negative)
+		\1 $\mathcal{O}(\vec{w}) = \underbrace{-\log \mathcal{L}_{\mathcal{D}}(\vec{w})}_{\text{negative log likelihood}}$
+	\end{outline}
+	\subsection{Optimizing: Sloppy Notations}
+	\begin{outline}
+		\1 The likelihood $\mathcal{L}$ depends on data $\mathcal{D}$ such as $\vec{X}$ and $\vec{y}$ and/or hyperparameters $\alpha, \beta$
+		\1 We gloss over constants like $\mathcal{D}$ when we define the objective function
+		\[ \mathcal{O}(\vec{w}) = -\log\mathcal{L}_{\mathcal{D}}(\vec{w}) = -\log \mathcal{L}(\vec{y} \;|\; \vec{X}, \vec{w}) \]
+	\end{outline}
+	These all mean the same thing.\\
+	We might also say "minimize $-\log \mathcal{O}(\vec{w})$"
+	\section{Partial Derivative and Gradient}
+	\begin{outline}
+		\1 Given a multi-variate function such as $f(x,y)$ or $f(\vec{w}$ or $\mathcal{O}(\vec{w})$
+		\1 The \textbf{partial derivative} $\frac{\delta f(x,y)}{\delta x}$ is the normal derivative of the function $f(x)$, where $y$ is interpreted as a constant.
+	\end{outline}
+	Example:
+	\begin{align*}
+		f(x,y) = 3 + x^3y^2 + y^2 + 7x\\
+		\frac{\delta f(x,y)}{\delta x} = 3y^2x^2 + 7\\
+		\frac{\delta f(x,y)}{\delta y} = 2x^3y + 2y
+	\end{align*}
+	The \textbf{gradient} of the function is the vector of partial derivatives
+	\[ \nabla f(x,y) \begin{bmatrix} \frac{\delta f(x,y)}{\delta x} \\ \frac{\delta f(x,y)}{\delta y} \end{bmatrix} =
+	\begin{bmatrix} 3y^2x^2 + 7\\2x^3y + 2y \end{bmatrix} \]
+	We can evaluate the gradient at any point $x,y$.
+	\subsection{Gradient Descent}
+	Goal: $\arg \min_{\vec{w}} f_{\mathcal{D}}(\vec{w})$ - function also includes $\vec{x}_i, y_i$ as constants
+	\begin{outline}
+		\1 Choose a random point $\vec{w}^{(0)} \in \mathbb{R}^J$
+		\1 For $t = 1$ to ... until converged:
+		\2 Identify upwards direction at current point: $\vec{\tilde{d}} = \nabla f(\vec{w}^{(t-1)})$
+		\2 Take a tiny step (of length $\alpha$) in opposite direction\\
+		$\vec{w}^{(t)} = \vec{w}^{(t-1)} - \alpha \vec{\tilde{d}}$
+	\end{outline}
+	\section{Hyperplane Models Revisited}
+	\subsection{Linear Model Objective}
+	\begin{outline}
+		\1 Given training data $\mathcal{D} = \{(\vec{x}_i, y_i)\}_{i=1}^N$
+		\1 Find a weight vector $\vec{w}$ that minimizes the errors
+		\1 Predict $i$ as positive if $\vec{w}\vec{x}_i \geq 0$
+		\1 Since only signs matter, this can be written compactly
+		\[ \min_{\vec{w}} \sum_i \Bigg\| \underbrace{\underbrace{y_i}_{\text{truth}} \cdot \underbrace{(\vec{w}\vec{x}_i)}_{\text{predict}} < 0}_{\text{true=mistake?}} \Bigg\| \]
+		if we define target variable $y_i = \begin{cases} +1 & \text{positive}\\
+		-1 & \text{negative} \end{cases}$
+		\1 Indicator function: $\|$True$\| = 1$ vs $\|$False$\| = 0$
+		\2 Actual $y_i = +1$, prediction $\vec{w}\vec{x}_i = 0.5$ then $+1 \cdot 0.5 \nless 0$
+		\2 Actual $y_i = -1$, prediction $\vec{w}\vec{x}_i = 0.5$ then $-1 \cdot 0.5 < 0$
+		\2 Actual $y_i = -1$ prediction $\vec{w}\vec{x}_i = -0.5$ then $-1 \cdot (-0.5) \nless 0$
+	\end{outline}
+	\subsection{Zero-One Loss}
+	\begin{outline}
+		\1 In Optimization, minimize objective function
+		\1 Minimizing the error rate
+		\[ \min_\vec{w} \underbrace{\Bigg\| y_i(\vec{w}\vec{x}_i) < 0}_{\text{Objective } \mathcal{O}} \]
+		\1 Also called the \textbf{Zero-One Loss}, awarding 0 or 1 per example
+		\1 We want as many zeros as possible, because 1s indicate mistakes. Remember: we are minimizing Objective $\mathcal{O}$!
+	\end{outline}
+\end{document}
