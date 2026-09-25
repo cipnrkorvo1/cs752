@@ -2,7 +2,7 @@
 \usepackage[a4paper, total={6in,8in}]{geometry}
 \usepackage{graphicx,float,hyperref}
 \usepackage{outlines,enumerate}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb,amsthm,stmaryrd}
 
 \renewcommand{\vec}[1]{%
 	\mathbf{#1}%
@@ -88,13 +88,33 @@
 	\begin{equation*}
 		1 < \frac{\frac{1}{1+\exp(-\mu)}}{\frac{\exp(-\mu)}{1+\exp(-\mu)}} \qquad \overset{\text{simplify}}\longrightarrow \qquad 1 < \frac{1}{\exp(-\mu)}
 	\end{equation*}
-	Since $\frac{1}{\exp(-\mu)}$ is equivalent to $\exp(\mu)$, remembering our definition $-\mu = \vec{w}\vec{x}_i$, we have shown this is equivalent to classifying and example as positive $(Y_i = 1)$ if and only if
+	Remembering our definition $-\mu = \vec{w}\vec{x}_i$, we have a positive classification when
 	\begin{equation*}
-		% sign flipped, figure out where
+		1 < \frac{1}{\exp(\vec{w}\vec{x}_i)}
+		\qquad \overset{\cdot\exp(\vec{w}\vec{x}_i)}\longrightarrow \qquad
+		\exp(\vec{w}\vec{x}_i) < 1
+	\end{equation*}
+	Thus we have shown this is equivalent to classifying an example as positive $(Y_i = 1)$ if and only if
+	\begin{equation*}
 		1 > \exp(\vec{w}\vec{x}_i)
 	\end{equation*}
 	
 	\section{Log Likelihood}
+	To start, we recognize that $\vec{y}$ consists of binary target variables; that is, $y_i \in \{0,1\}$. We can rewrite the likelihood function in terms of $P(Y=1)$ and $P(Y=0)$ by utilizing $y_i$ as a selector within the product:
+	\begin{equation*}
+		\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}) = \prod_{i=1}^n P(Y_i=1\gv\vec{w},\vec{x}_i)^{y_i}\cdot P(Y_i = 0\gv\vec{w},\vec{x}_i)^{(1-y_i)}
+	\end{equation*}
+	Since $y_i\in{0,1}$, when $y_i=1$ the first factor is selected and when $y_i=0$ the second factor is selected, since $a^1b^0=a$ and $a^0b^1=b$.\\
+	Here we will define $\theta_i = P(Y_i = 1 \gv \vec{w},\vec{x}_i)$ as a shorthand, to make the following steps cleaner (notice that $1-\theta_i = P(Y_i = 0\gv\vec{w},\vec{x}_i)$ since $\theta_i$ is binary).
+	\begin{align*}
+		\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}) &= \ln[ \prod_{i=1}^n \theta_i^{y_i}(1-\theta_i)^{(1-y_i)} ]\\
+		&= \sum_{i=1}^n \ln(\theta_i^{y_i}(1-\theta_i)^{(1-y_i)})\\
+		&= \sum_{i=1}^n y_i\ln\theta_i + (1-y_i)\ln(1-\theta_i)\\
+		&= \boxed{\sum_{i=1}^n y_i\ln P(Y_i = 1\gv\vec{w},\vec{x}_i) + (1-y_i)\ln P(Y_i = 0\gv\vec{w},\vec{x}_i )}\\
+		& \qquad\text{Since }y_i^* \in \{0,1\},y_i = \llbracket y_i^* = 1\rrbracket \text{ and } 1 - y_i = \llbracket y_i^* = 0 \rrbracket;\\
+		&= \boxed{\sum_{i=1}^n \llbracket y_i^* = 1\rrbracket\ln P(Y_i = 1\gv\vec{w},\vec{x}_i) + \llbracket y_i^* = 0 \rrbracket\ln P(Y_i = 0\gv\vec{w},\vec{x}_i)}
+	\end{align*}
+	
 	
 	\section{Identities}
 	
