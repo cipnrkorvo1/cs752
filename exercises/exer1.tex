@@ -36,10 +36,10 @@
 	In other words, dividing each part of the fraction $\frac{\exp(\mu)}{1 + \exp(\mu)}$ by $\exp(\mu)$ yields $\frac{1}{\exp(-\mu) + 1}$.
 	
 	\section{Inverse of Bernoulli Log Odds}
-	First, we observe that, since $\theta$ is the parameter of a Bernoulli distribution, $P(0\gv \theta) = 1 - P(1\gv\theta)$. Thus we can rewrite $f(\theta) = \log(\frac{P(1\gv\theta)}{1-P(1\gv\theta)})$.\\
-	By the definition of a Bernoulli distribution with parameter $\theta$, $P(1\gv\theta) = \theta$, and with $\mu = f(\theta)$ we have 
+	First, we observe that, since $\theta$ is the parameter of a Bernoulli distribution, $P(0\gv  \theta) = 1 - P(1\gv \theta)$. Thus we can rewrite $f(\theta) = \log(\frac{P(1\gv \theta)}{1-P(1\gv \theta)})$.\\
+	By the definition of a Bernoulli distribution with parameter $\theta$, $P(1\gv \theta) = \theta$, and with $\mu = f(\theta)$ we have 
 	\begin{equation*}
-		\mu = \log(\frac{P(1\gv\theta)}{1 - P(1\gv\theta)}) = \log(\frac{\theta}{1-\theta})
+		\mu = \log(\frac{P(1\gv \theta)}{1 - P(1\gv \theta)}) = \log(\frac{\theta}{1-\theta})
 	\end{equation*}
 	We take the exp on both sides
 	\begin{equation*}
@@ -61,15 +61,15 @@
 	\end{align*}
 	
 	\section{Total Probability}
-	Since $\theta$ is a Bernoulli parameter, $P(1\gv\theta) + P(0\gv\theta) = 1$.
-	\\Rewriting $P(0\gv\theta) = 1 - P(1\gv\theta)$, we have
+	Since $\theta$ is a Bernoulli parameter, $P(1\gv \theta) + P(0\gv \theta) = 1$.
+	\\Rewriting $P(0\gv \theta) = 1 - P(1\gv \theta)$, we have
 	\begin{equation*}
-		P(0\gv\theta) = 1 - \frac{1}{1+\exp(-\mu)}
+		P(0\gv \theta) = 1 - \frac{1}{1+\exp(-\mu)}
 	\end{equation*}
 	Writing terms over a common denominator,
 	\begin{equation*}
 		\boxed{
-			P(0\gv\theta) = \frac{1+\exp(-\mu)}{1+\exp(-\mu)} - \frac{1}{1+\exp(-\mu)}
+			P(0\gv \theta) = \frac{1+\exp(-\mu)}{1+\exp(-\mu)} - \frac{1}{1+\exp(-\mu)}
 			= \frac{\exp(-\mu)}{1+\exp(-\mu)}
 		}
 	\end{equation*}
@@ -77,12 +77,12 @@
 	\section{Decision Boundary}
 	If we define $-\mu = \vec{w}\vec{x}_i$, then we can use previously proven equivalencies:
 	\begin{align*}
-		&P(Y_i = 1 \gv \vec{w},\vec{x}_i) = \frac{1}{1+\exp(-\mu)} = P(1\gv\theta)\\
-		&P(Y_i = 0\gv \vec{w},\vec{x}_i) = \frac{\exp(-\mu)}{1+\exp(-\mu)} = P(0\gv\theta)
+		&P(Y_i = 1 \gv  \vec{w},\vec{x}_i) = \frac{1}{1+\exp(-\mu)} = P(1\gv \theta)\\
+		&P(Y_i = 0\gv  \vec{w},\vec{x}_i) = \frac{\exp(-\mu)}{1+\exp(-\mu)} = P(0\gv \theta)
 	\end{align*}
 	Thus we will classify an example as positive $(Y_i = 1)$ if and only if
 	\begin{equation*}
-		1 < \frac{P(1\gv\theta)}{P(0\gv\theta)}
+		1 < \frac{P(1\gv \theta)}{P(0\gv \theta)}
 	\end{equation*}
 	which we further rewrite as
 	\begin{equation*}
@@ -102,33 +102,133 @@
 	\section{Log Likelihood}
 	To start, we recognize that $\vec{y}$ consists of binary target variables; that is, $y_i \in \{0,1\}$. We can rewrite the likelihood function in terms of $P(Y=1)$ and $P(Y=0)$ by utilizing $y_i$ as a selector within the product:
 	\begin{equation*}
-		\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}) = \prod_{i=1}^n P(Y_i=1\gv\vec{w},\vec{x}_i)^{y_i}\cdot P(Y_i = 0\gv\vec{w},\vec{x}_i)^{(1-y_i)}
+		\mathcal{L}(\vec{y}\gv x,w) = \prod_{i=1}^n P(Y_i=1\gv \vec{w},\vec{x}_i)^{y_i}\cdot P(Y_i = 0\gv \vec{w},\vec{x}_i)^{(1-y_i)}
 	\end{equation*}
 	Since $y_i\in{0,1}$, when $y_i=1$ the first factor is selected and when $y_i=0$ the second factor is selected, since $a^1b^0=a$ and $a^0b^1=b$.\\
-	Here we will define $\theta_i = P(Y_i = 1 \gv \vec{w},\vec{x}_i)$ as a shorthand, to make the following steps cleaner (notice that $1-\theta_i = P(Y_i = 0\gv\vec{w},\vec{x}_i)$ since $\theta_i$ is binary).
+	Here we will define $\theta_i = P(Y_i = 1 \gv  \vec{w},\vec{x}_i)$ as a shorthand, to make the following steps cleaner (notice that $1-\theta_i = P(Y_i = 0\gv \vec{w},\vec{x}_i)$ since $\theta_i$ is binary).
 	\begin{align*}
-		\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}) &= \ln[ \prod_{i=1}^n \theta_i^{y_i}(1-\theta_i)^{(1-y_i)} ]\\
+		\ln\mathcal{L}(\vec{y}\gv x,w) &= \ln\left[ \prod_{i=1}^n \theta_i^{y_i}(1-\theta_i)^{(1-y_i)} \right]\\
 		&= \sum_{i=1}^n \ln(\theta_i^{y_i}(1-\theta_i)^{(1-y_i)})\\
 		&= \sum_{i=1}^n y_i\ln\theta_i + (1-y_i)\ln(1-\theta_i)\\
-		&= \boxed{\sum_{i=1}^n y_i\ln P(Y_i = 1\gv\vec{w},\vec{x}_i) + (1-y_i)\ln P(Y_i = 0\gv\vec{w},\vec{x}_i )}\\
-		& \qquad\text{Since }y_i^* \in \{0,1\},y_i = \llbracket y_i^* = 1\rrbracket \text{ and } 1 - y_i = \llbracket y_i^* = 0 \rrbracket;\\
-		&= \boxed{\sum_{i=1}^n \llbracket y_i^* = 1\rrbracket\ln P(Y_i = 1\gv\vec{w},\vec{x}_i) + \llbracket y_i^* = 0 \rrbracket\ln P(Y_i = 0\gv\vec{w},\vec{x}_i)}
+		&= \boxed{\sum_{i=1}^n y_i\ln P(Y_i = 1\gv w,x_i) + (1-y_i)\ln P(Y_i = 0\gv w,x_i )}\\
+		& \qquad\text{Since }y_i^* \in \{0,1\},y_i = \llbracket y_i^* = 1\rrbracket \text{ and } 1 - y_i = \llbracket y_i^* = 0 \rrbracket:\\
+		&= \boxed{\sum_{i=1}^n \llbracket y_i^* = 1\rrbracket\ln P(Y_i = 1\gv w,x_i) + \llbracket y_i^* = 0 \rrbracket\ln P(Y_i = 0\gv w,x_i)}
 	\end{align*}
 	
 	
 	\section{Identities}
+	\subsection*{a)}
+	Replace $p_0$ and $p_1$ in terms of $\vec{w}\vec{x}_i$:
+	\begin{align*}
+		\vec{w}\vec{x}_i &=
+		\ln\left( \frac{\frac{\exp(\vec{w}\vec{x}_i)}{1+\exp(\vec{w}\vec{x}_i)}}{\frac{1}{1+\exp(\vec{w}\vec{x}_i)}} \right)\\
+		&= \ln\left( \frac{\exp(\vec{w}\vec{x}_i)}{1} \right)\\
+		&= \vec{w}\vec{x}_i
+	\end{align*}
+	Since $\vec{w}\vec{x}_i = \vec{w}\vec{x}_i$ we have shown the expression $\ln\frac{p_0}{p_1} = \vec{w}\vec{x}_i$ holds.
+	
+	\subsection*{b)}
+	Replace $p_1$ in terms of $\vec{w}\vec{x}_i$:
+	\[ \ln\left(\frac{1}{1+\exp(\vec{w}\vec{x}_i)}\right) = -\ln(1+\exp(\vec{w}\vec{x}_i)) \]
+	Using logarithm rules:
+	\begin{gather*} 
+		\ln\left(\frac{1}{1+\exp(\vec{w}\vec{x}_i)}\right) = \ln(1) - \ln(1+\exp(\vec{w}\vec{x}_i)) \\
+		\text{Then substitute:}\\
+		0 - \ln(1+\exp(\vec{w}\vec{x}_i))= -\ln(1+\exp(\vec{w}\vec{x}_i))
+	\end{gather*}
+	Thus we have shown $\ln p_1 = \ln(1+\exp(\vec{w}\vec{x}_i))$ holds.
 	
 	\section{Simplified Log-Likelihood}
-	
+	First, we restate the log-likelihood function in terms of $p_0$ and $p_1$:
+	\[ \ln\mathcal{L} = \sum_{i=1}^n y_i \ln p_{1i} + (1-y_i)\ln p_{0i} \]
+	We can rearrange the sum:
+	\begin{align*}
+		y\ln p_1 + (1 - y)\ln p_0 &= y\ln p_1 + \ln p_0 - y \ln p_0\\
+		&= y(\ln p_1 - \ln p_0) + \ln p_0\\
+		&= y\ln\left(\frac{p_1}{p_0}\right) + \ln p_0
+	\end{align*}
+	Using previous identities and equivalencies:
+	\begin{align*}
+		y\ln\left(\frac{p_1}{p_0}\right) + \ln p_0 &=
+		y \ln \left(\frac{1}{\exp(\vec{w}\vec{x})}\right) + \ln\left(\frac{\exp(\vec{w}\vec{x})}{1+\exp(\vec{w}\vec{x})}\right)\\
+		&= y\cdot -\vec{w}\vec{x} + \vec{w}\vec{x} - \ln(1+\exp(\vec{w}\vec{x}))\\
+		&= \boxed{(1-y)\vec{w}\vec{x} - \ln(1+\exp(\vec{w}\vec{x}))}
+	\end{align*}
+	By putting this expression back into the context of the log-likelihood function, we see that the log-likelihood expression does in fact simplify as:
+	\[ \ln\mathcal{L}(\vec{y}\gv x,w) = \sum_{i=1}^n
+		(1-y_i)\vec{w}\vec{x}_i - \ln(1 + \exp(\vec{w}\vec{x}_i)) \]
 	\section{Gradient on Log-Likelihood}
+	To find $\nabla(-\ln\mathcal{L}(\vec{y}\gv \vec{X},\vec{w}))$ we will differentiate with respect to $\vec{w}$ because that is the variable we are optimizing for; $\vec{y}$ and $\vec{X}$ are data points, and so can be treated as constants.\\
+	First, rewrite the expression from task 7 with the negative sign:
+	\begin{align*}
+		-\ln\mathcal{L} &= -\sum_{i=1}^n \left[ (1-y_i)\vec{w}\vec{x}_i - \ln(1+\exp(\vec{w}\vec{x}_i)) \right]\\
+		&= \sum_{i=1}^n -(1-y_i)\vec{w}\vec{x}_i + \ln(1+\exp(\vec{w}\vec{x}_i))
+	\end{align*}
+	Now we differentiate with respect to $w$.\\
+	The first term is easy:
+	\[ \nabla_{\vec{w}}(-(1-y_i)\vec{w}\vec{x}_i) = -(1-y_i)\vec{x}_i \]
+	The second term requires the chain rule:
+	\begin{align*}
+		\nabla_{\vec{w}} (\ln1+\exp(\vec{w}\vec{x}_i)) &= \frac{1}{1+\exp(\vec{w}\vec{x}_i)} + \nabla_{\vec{w}} \exp(\vec{w}\vec{x}_i)\\
+		&= \frac{1}{1+\exp(\vec{w}\vec{x}_i)} + \exp(\vec{w}\vec{x}_i)\vec{x}_i\\
+		&= \frac{\exp(\vec{w}\vec{x}_i)}{1+\exp(\vec{w}\vec{x}_i)}\vec{x}_i\\
+		&= p_0\vec{x}_i \qquad\qquad \leftarrow \text{Using task 6 definition}
+	\end{align*}
+	Putting everything back into the sum, we have the derivation of the gradient:
+	\[
+		\nabla_{\vec{w}} (-\ln\mathcal{L}) = \sum_{i=1}^n -(1-y_i)\vec{x}_i + p_{0i}\vec{x}_i
+	\]
+	Factor out $\vec{x}$, then move the negative outside the sum:
+	\[
+		= \sum_{i=1}^n \vec{x}_i(p_{0i} - 1 + y_i) 
+		 = \boxed{- \sum_{i=1}^n \vec{x}_i(1 - y_i - p_{0i})}
+	\]
+	Since $(1 - p_0) = p_1$,
+	\[ = -\sum_{i=1}^n \vec{x}_i(- y_i + p_{1i}) = \boxed{\sum_{i=1}^n \vec{x}_i(y_i - p_{1i})}\]
+	Using definitions of $p_0$ and $p_1$, the gradient for entry $w_j$ thus has the form:
+	\begin{align*}
+		\frac{\partial(-\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}))}{\partial w_j} &= \boxed{- \sum_{i=1}^n x_{ij}((1 - y_i) - P(Y_i = 0\gv\vec{w},\vec{x}_i))}\\
+		&= \boxed{\sum_{i=1}^n x_{ij}(y_i - P(Y_i = 1\gv\vec{w},\vec{x}_i)}
+	\end{align*}
+	
 	
 	\section{LogReg Gradient as Matrix Operation}
+	First, we can explicitly extend the definition of $g_i(\vec{w})$ for each example $i : 1..n$ to a matrix $\vec{g}(\vec{w})$, where each row $i$ contains $g_i(\vec{w})$. Then we can work backwards from the vector matrix product
+	\[ \nabla(-\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w})) = \vec{g}(\vec{w})^T \vec{X} \] 
+	The transpose $\vec{g}(\vec{w})^T$ contains 1 row and $n$ columns:
+	\[ \begin{bmatrix} g_1(\vec{w}), g_2(\vec{w}), ..., g_n(\vec{w}) \end{bmatrix} \]
+	The design matrix $\vec{X}$ contains $n$ rows and $1$ column (of vectors $\vec{x}$):
+	\[\begin{bmatrix}
+		\vec{x}_1\\
+		\vec{x}_2\\
+		\vdots \\
+		\vec{x}_n
+	\end{bmatrix}\]
+	Applying matrix multiplication between $\vec{g}(\vec{w})^T$ and $\vec{X}$ yields a sum
+	\begin{align*}
+		 & \vec{x}_1g_1(\vec{w}) + \vec{x}_2g_2(\vec{w}) + ... + \vec{x}_ng_n(\vec{w})\\
+		=& \sum_{i=1}^n x_ig_i(\vec{w})
+	\end{align*}
+	We can expand $g_i(\vec{w})$ back to its definition:
+	\[ = \sum_{i=1}^n \vec{x}_i(y_i - P(Y_i = 1\gv \vec{w},\vec{x}_i)) \]
+	However, in task 8, we have shown that this expression is equivalent to the gradient
+	\[ \nabla(-\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w}))\]
+	Thus, we have shown that the gradient can be represented by a vector matrix product as
+	\[ \nabla(-\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w})) = \vec{g}(\vec{w})^T \vec{X} \]
 	
 	\section{L2 regularization}
+	\subsection*{a)}
+	As we gradually increase $\lambda$ from 0 to a large value, the regression will begin prioritizing keeping any/all $w_j$ small over keeping $-\ln\mathcal{L}$ small. Since $\|\vec{w}\|$ squares $w_j$, increasing $w_j$ will need to provide a lot more benefit the higher it is, leading to values of $w_j$ that are more similar. But for very large $\lambda$s, all $w_j$ will approach 0 as $\lambda$ approaches infinity, which diminishes any effectiveness altogether.
+	\subsection*{b)}
+	\begin{align*}
+		\frac{\partial}{\partial w_j}\mathcal{O}(\vec{w}) &= \frac{\partial}{\partial w_j}(-\ln\mathcal{L}(\vec{y}\gv\vec{X},\vec{w})) + \frac{\partial}{\partial w_j}(\frac{\lambda}{2}\sum_j w_j^2)\\
+		&= \boxed{ \sum_{i=1}^n x_{ij}g_i(\vec{w}) + \lambda w_j }
+	\end{align*}
+	The partial derivative $\frac{\partial}{\partial w_j}\mathcal{O}(\vec{w})$ applies a flat bias $\lambda w_j$ to each dimension in the weight vector, while $\mathcal{O}(\vec{w})$ applies the sum of each weight squared to the regularized NLL. L2 Regularization is likely referred to as weight decay because it pushes weights toward 0, by imposing a penalty on larger weights, especially across the entire NLL from squared weights.
 	
-	\section{$\star$ L2 regularization as Gaussian Prior}
+	%\section{$\star$ L2 regularization as Gaussian Prior}
 	
-	\section{$\star$ Separable data}
+	%\section{$\star$ Separable data}
 	
-	\section{$\star$ Convexity}
+	%\section{$\star$ Convexity}
 \end{document}
