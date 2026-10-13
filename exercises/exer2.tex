@@ -1,0 +1,127 @@
+\documentclass{article}
+\usepackage[a4paper, total={6in,8in}]{geometry}
+\usepackage{graphicx,float,hyperref}
+\usepackage{outlines,enumerate}
+\usepackage{amsmath,amssymb,amsthm,stmaryrd}
+\usepackage{mathrsfs, bm}
+
+\renewcommand{\vec}[1]{%
+	\bm{#1}%
+}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	urlcolor=blue
+}
+
+\title{NN Exercise 2: Multi-variate Log Reg and MLPs}
+\date{October 13, 2026}
+\author{Grey Cole}
+
+\newcommand{\gv}{%
+	\:|\:
+}
+
+\begin{document}
+	\maketitle
+	
+	\section{From Linear Models to Class Probabilities}
+	\subsection*{a)}
+	For all $\mu \in \mathbb{R}$, $\exp(\mu) > 0$ because $\exp(\mu) = e^{\mu}$ and the range of $e^{\mu}$ is $(0, \infty)$ over its domain $\mathbb{R}$. Hence this holds for any $\vec{x}_i$ and any $\vec{w}$ because $\mu = \vec{w}^T\vec{x}_i$.
+	
+	\subsection*{b)}
+	First, divide probability of positive classification by $Z_i$:
+	\[
+		P(Y_i = 1 \gv \vec{x}_i) = \frac{\exp(\mu_{i,1})}{\exp(\mu_{i,0}) + \exp(\mu_{i,1})}
+	\]
+	Divide each half of the fraction by $\exp(\mu_{i,1})$:
+	\[
+		\frac{\exp(\mu_{i,1})}{\exp(\mu_{i,0}) + \exp(\mu_{i,1})}
+		\quad/\quad \frac{\exp(\mu_{i,1})}{\exp(\mu_{i,1})} =
+		\frac{1}{\frac{\exp(\mu_{i,0}) + \exp(\mu_{i,1})}{\exp(\mu_{i,1})}}
+		= \frac{1}{\exp(\mu_{i,0} - \mu_{i,1}) + 1}
+	\]
+	We have an expression with the same form as asked for in the question.\\Thus we see that $\;\cdot\; = \mu_{i,0} - \mu_{i,1}$.
+	
+	\subsection*{c)}
+	\[
+		P(Y_i = c \gv \vec{x}_i) = \frac{\exp(\mu_{i,c})}{\sum_{c'}^{C-1} \exp(\mu_{i,c'})}
+	\]
+	
+	\subsection*{d)}
+	$\exp(\mu)$ makes an arbitrary real number into a class probability by making it nonnegative, thus usable as an unnormalized probability. Then dividing each probability by the sum of the unnormalized probabilities clamps each probability between 0 and 1.\\
+	The division step is also responsible for the probabilities summing to one. We've created a fraction that directly represents part / whole. When we sum all of the parts together, we get whole / whole which is obviously 1 (with nonnegative parts, which $\exp(\mu)$ also guarantees).
+	
+	\section{$\star$ Logistic Regression as a Log-linear Model}
+	
+	
+	\section{Multi-class Logistic Regression}
+	Using $\mu_{i,c} = \vec{w}_c^T\vec{x}_i$, we convert the generalized expression from task 1.c into terms of $\vec{x}_i$:\par
+	For each class $c \in \{0,...,C-1\}:$
+	\[ P(Y_i = c \gv \vec{x}_i) = \frac{\exp(\vec{w}_c^T\vec{x}_i)}{\sum_{c'}^{C-1} \exp(\vec{w}_{c'}^T\vec{x}_i)} \]
+	The model needs $C$ weight vectors $\vec{w}_c$ with length $J$ (where $J$ is the length of each vector $\vec{x}_i$).
+	
+	\section{Vectorized Multi-class Logistic Regression}
+	\subsection*{a)}
+	\begin{outline}
+		\1$o$ is the probability that $\vec{x}_i$ is classified as class $c$.
+		\1$o$ is normalized over the sum of the unnormalized probability $\vec{x}_i$ classifies as class $c'$ for each $c' \in \{0,...,C-1\}$
+	\end{outline}
+	
+	\subsection*{b)}
+	Shape of $\hat{\vec{y}_i} = (C \times 1)$
+	
+	\subsection*{c)}
+	The predicted class $\hat{y_i}$ is found as $\hat{y_i} = \arg\max_c(\hat{\vec{y}_i})$
+	
+	\subsection*{d)}
+	Shape of $\hat{\vec{Y}} = $ shape of $\vec{W}^T\vec{X}^T = (C \times J)(J \times n) = \boxed{(C \times n)}$.\\
+	$\vec{X}$ needs to be transposed so that the inner dimensions of the matrix multiplication match.
+	
+	\subsection*{e)}
+	The predicted classes $\hat{Y}$ are found as $\hat{Y} = \arg\max(\hat{\vec{y}_i})$ across all examples $i \in \{0,...,n-1\}$.
+	
+	\section{$\star$ Log-sum-exp correctness}
+	
+	
+	\section{Log-sum-exp Implications}
+	\subsection*{a)}
+	The log-sum-exp trick provides numerical stability by preventing computation of enormous exponents that overflow. Using the examples provided, $e^{5000}$ will certainly overflow to infinity (or some other unstable representation). The key component is that we don't care about extremely small exponents; it's okay to approximate extremely tiny numbers as 0 since they are used with softmax which does not care about those numbers anyway.\\
+	In short, the trick keeps the significant values and ignores the insignificant values when there is a huge disparity in magnitude.
+	
+	\subsection*{b)}
+	The approximation $\log \hat{y_j} \approx o_j - \bar{o}$ applies when $\exp(\bar{o}) \approx \sum_{j'} \exp(o_{j'})$.\\
+	In plain terms, it applies when the maximum class probability is approximately 1.
+	
+	\subsection*{c)}
+	Using the stable log-sum-exp trick to calculate class probabilities avoids instability from large exponents overflowing. The issue with small exponents underflowing to 0 is dealt with by softmax: those small exponents would have been approximately 0 anyway, so underflowing does not change the outcome.
+	
+	
+	\section{Optimization Function of MLP with MSE loss}
+	First, plug the prediction function into MSE loss:
+	\[ J(\vec{b}, \vec{V}, \vec{U}) = \| \vec{y}^* - (\vec{V}^T\exp(\vec{U}^T\vec{x}) + \vec{b}) \|_2^2 \]
+	
+	Expand the sum of squares:
+	
+	\[ = \sum_h (y_h^* - [\vec{V}^T\exp(\vec{U}^T\vec{x}) + \vec{b}]_h)^2 \]
+	
+	Apply the subscript to the inner terms:
+	\begin{align*}
+	[\vec{V}^T\exp(\vec{U}^T\vec{x}) + \vec{b}]_h &= \vec{v}_h \exp(\vec{U}^T\vec{x}) + b_h
+	\end{align*}
+	
+	Change vector/matrix multiplication into sum representations:
+	
+	\begin{align*}
+		&&\vec{v}_h\exp(\vec{U}^T\vec{x}) &= \sum_n v_{hn} \exp(\vec{u}_n\vec{x})&&\\
+		&\quad\text{and}&\exp(\vec{u}_n\vec{x}) &= \sum_k \exp(u_{nk}x_k)&&\\
+		&\implies \qquad &\vec{v}_h \exp(\vec{U}^T\vec{x}) &= \sum_n \sum_k v_{hn} \exp(u_{nk}x_k)&&\\
+		&\implies \qquad &J(\vec{b},\vec{V},\vec{U}) &= \boxed{\sum_h \left(y_h^* - \sum_n \sum_k \left( v_{hn}\exp(u_{nk}x_k) \right) - b_h \right)^2}&&
+	\end{align*}
+
+	
+	\section{Gradient of MLP with MSE loss}
+
+	
+\end{document}
